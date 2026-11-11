@@ -68,7 +68,8 @@
     .video-layer.waiting { opacity:0; visibility:hidden; }
     .video-card { width:min(92vw,440px); position:relative; transform:translateY(16px) scale(.98); transition:transform .35s; }
     .open .video-card { transform:translateY(0) scale(1); }
-    video { display:block; width:100%; height:min(78svh,780px); aspect-ratio:9/16; object-fit:contain; background:#120f15; border-radius:22px; box-shadow:0 28px 90px #0008; }
+    .video-frame { overflow:hidden; border-radius:30px; background:#120f15; box-shadow:0 28px 90px #0008; }
+    video { display:block; width:100%; height:min(78svh,780px); aspect-ratio:9/16; object-fit:contain; background:#120f15; border-radius:inherit; }
     .close { position:absolute; right:0; bottom:calc(100% + 12px); width:42px; height:42px; border:1px solid #ffffff55; border-radius:50%; color:#fff; background:#ffffff20; font-size:25px; cursor:pointer; }
     .video-note { color:#fff; text-align:center; margin:16px 0 0; font-size:.95rem; }
     .confetti { position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:4; }
@@ -119,10 +120,12 @@
   <section class="video-layer" id="videoLayer" role="dialog" aria-modal="true" aria-label="Видео поздравление">
     <div class="video-card">
       <button class="close" id="closeVideo" aria-label="Закрыть видео">×</button>
-      <video id="birthdayVideo" controls playsinline preload="metadata">
-        <source src="video.mp4" type="video/mp4">
-        Твой браузер не поддерживает воспроизведение видео.
-      </video>
+      <div class="video-frame">
+        <video id="birthdayVideo" controls playsinline preload="metadata">
+          <source src="video.mp4" type="video/mp4">
+          Твой браузер не поддерживает воспроизведение видео.
+        </video>
+      </div>
       <p class="video-note">С днём рождения! 🎂</p>
     </div>
   </section>
