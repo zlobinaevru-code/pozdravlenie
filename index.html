@@ -14,6 +14,23 @@
     .eyebrow:before,.eyebrow:after { content:"✦"; color:#e6ae50; font-size:.8rem; }
     h1 { margin:0; font-size:clamp(2rem,8vw,3.7rem); line-height:1.04; letter-spacing:-.045em; text-wrap:balance; }
     .hint { margin:15px 0 0; color:#806d7e; font-size:clamp(1rem,3.8vw,1.15rem); }
+    .birth-form { width:min(100%,360px); margin:clamp(22px,4vh,34px) auto 0; }
+    .birth-form label { display:block; margin-bottom:11px; font-size:1.13rem; font-weight:750; }
+    .date-row { display:flex; gap:9px; }
+    .birth-form input { min-width:0; flex:1; padding:14px 12px; border:1px solid #dfc9d3; border-radius:15px; color:var(--ink); background:#fff; font:inherit; box-shadow:0 6px 20px #7548610d; }
+    .birth-form input:focus-visible { outline:3px solid #d889a3; outline-offset:2px; }
+    .birth-form button { padding:0 17px; border:0; border-radius:15px; background:linear-gradient(135deg,#ef7790,#dc587b); color:#fff; font:inherit; font-weight:750; box-shadow:0 8px 18px #cb688133; cursor:pointer; }
+    .birth-form button:active { transform:translateY(1px); }
+    .error { min-height:1.4em; margin:10px 0 0; color:#b43e62; font-size:.93rem; }
+    .confirm-layer { position:fixed; inset:0; z-index:3; display:grid; place-items:center; padding:22px; background:#402b4266; backdrop-filter:blur(8px); opacity:0; visibility:hidden; transition:opacity .25s,visibility .25s; }
+    .confirm-layer.open { opacity:1; visibility:visible; }
+    .confirm-card { width:min(100%,390px); padding:30px 24px 24px; border:1px solid #fff; border-radius:28px; background:linear-gradient(145deg,#fffefa,#fff0f2); box-shadow:0 24px 80px #402b4240; transform:translateY(12px) scale(.97); transition:transform .25s; }
+    .confirm-layer.open .confirm-card { transform:translateY(0) scale(1); }
+    .confirm-icon { margin:0 0 10px; font-size:2.4rem; }
+    .confirm-card h2 { margin:0; font-size:clamp(1.5rem,6vw,1.9rem); line-height:1.15; }
+    .confirm-answers { display:flex; gap:12px; margin-top:24px; }
+    .confirm-answers button { flex:1; min-height:52px; border:0; border-radius:16px; color:white; background:linear-gradient(135deg,#ef7790,#dc587b); font:inherit; font-size:1.1rem; font-weight:800; cursor:pointer; box-shadow:0 8px 18px #cb688133; }
+    [hidden] { display:none !important; }
     .gift-button { display:block; margin:clamp(20px,4vh,34px) auto 0; padding:4px; width:min(78vw,360px); aspect-ratio:1; border:0; border-radius:38px; background:transparent; cursor:pointer; -webkit-tap-highlight-color:transparent; filter:drop-shadow(0 25px 25px #cb688144); transition:transform .25s ease,filter .25s ease; }
     .gift-button:hover { transform:translateY(-7px) rotate(-2deg); filter:drop-shadow(0 30px 24px #cb688155); }
     .gift-button:focus-visible,.close:focus-visible { outline:4px solid #60446a; outline-offset:5px; }
@@ -53,13 +70,31 @@
 </head>
 <body>
   <main class="scene" id="greeting">
-    <p class="eyebrow">для самого именинника</p>
-    <h1>У тебя есть подарок!</h1>
-    <p class="hint">Нажми на коробочку, чтобы открыть ✨</p>
-    <button class="gift-button" id="openGift" aria-label="Открыть подарок">
+    <p class="eyebrow">секретный подарок для Сёмы</p>
+    <h1>Для тебя приготовили сюрприз</h1>
+    <form class="birth-form" id="birthForm">
+      <label for="birthDate">Ваша дата рождения?</label>
+      <div class="date-row">
+        <input id="birthDate" name="birthDate" type="date" autocomplete="bday" required aria-describedby="birthError">
+        <button type="submit">Проверить</button>
+      </div>
+      <p class="error" id="birthError" aria-live="polite"></p>
+    </form>
+    <p class="hint" id="openHint" hidden>Дата верная! Теперь открой свой подарок ✨</p>
+    <button class="gift-button" id="openGift" aria-label="Открыть подарок" hidden>
       <span class="gift" aria-hidden="true"><i class="sparkle s1">✦</i><i class="sparkle s2">✧</i><i class="sparkle s3">✦</i><span class="box"></span><span class="lid"></span><span class="bow"></span></span>
     </button>
   </main>
+  <section class="confirm-layer" id="confirmLayer" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="confirm-card">
+      <p class="confirm-icon" aria-hidden="true">🎂</p>
+      <h2 id="confirmTitle">У тебя точно сегодня день рождения?</h2>
+      <div class="confirm-answers">
+        <button type="button" class="confirmYes">Да!</button>
+        <button type="button" class="confirmYes">Да!</button>
+      </div>
+    </div>
+  </section>
   <div class="confetti" id="confetti" aria-hidden="true"></div>
   <section class="video-layer" id="videoLayer" role="dialog" aria-modal="true" aria-label="Видео поздравление">
     <div class="video-card">
@@ -76,6 +111,28 @@
     const video = document.getElementById('birthdayVideo');
     const openButton = document.getElementById('openGift');
     const confetti = document.getElementById('confetti');
+    const birthForm = document.getElementById('birthForm');
+    const birthDate = document.getElementById('birthDate');
+    const birthError = document.getElementById('birthError');
+    const confirmLayer = document.getElementById('confirmLayer');
+    birthForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (birthDate.value === '1996-11-12') {
+        birthError.textContent = '';
+        birthForm.hidden = true;
+        confirmLayer.classList.add('open');
+        confirmLayer.querySelector('.confirmYes').focus();
+      } else {
+        birthError.textContent = 'Похоже, дата не совпала. Попробуй ещё раз.';
+        birthDate.focus();
+      }
+    });
+    document.querySelectorAll('.confirmYes').forEach(button => button.addEventListener('click', () => {
+      confirmLayer.classList.remove('open');
+      document.getElementById('openHint').hidden = false;
+      openButton.hidden = false;
+      openButton.focus();
+    }));
     function celebrate() {
       const colors = ['#ef6d8b','#f5c45d','#8c72c9','#66c6a5','#ffffff'];
       for (let i=0; i<70; i++) {
