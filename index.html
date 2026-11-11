@@ -21,7 +21,6 @@
     .date-row { display:flex; gap:9px; }
     .birth-form input { min-width:0; flex:1; padding:14px 16px; border:1px solid #dfc9d3; border-radius:15px; color:var(--ink); background:#fff; font:inherit; box-shadow:0 6px 20px #7548610d; }
     .birth-form input::placeholder { color:#ad9aa5; opacity:1; }
-    .date-help { margin:8px 2px 0; color:#897482; font-size:.88rem; text-align:left; }
     .birth-form input:focus-visible { outline:3px solid #d889a3; outline-offset:2px; }
     .birth-form button { padding:0 17px; border:0; border-radius:15px; background:linear-gradient(135deg,#ef7790,#dc587b); color:#fff; font:inherit; font-weight:750; box-shadow:0 8px 18px #cb688133; cursor:pointer; }
     .birth-form button:active { transform:translateY(1px); }
@@ -99,7 +98,6 @@
         <input id="birthDate" name="birthDate" type="text" inputmode="numeric" autocomplete="bday" placeholder="ДД.ММ.ГГГГ" maxlength="10" required aria-describedby="dateHelp birthError">
         <button type="submit">Проверить</button>
       </div>
-      <p class="date-help" id="dateHelp">Точки появятся автоматически</p>
       <p class="error" id="birthError" aria-live="polite"></p>
     </form>
     <p class="hint" id="openHint" hidden>Дата верная! Теперь открой свой подарок ✨</p>
