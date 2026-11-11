@@ -8,16 +8,19 @@
   <style>
     :root { color-scheme: light; --ink:#402b42; --pink:#ef6d8b; --gold:#f5c45d; --paper:#fff8f1; }
     * { box-sizing:border-box }
-    body { margin:0; min-height:100svh; display:grid; place-items:center; overflow:hidden; padding:24px; color:var(--ink); font-family: ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif; background:radial-gradient(ellipse at 50% 38%,#fff 0,#fffaf5 43%,#fce5e9 100%); }
+    body { margin:0; min-height:100svh; display:grid; place-items:center; overflow:hidden; padding:24px; color:var(--ink); font-family: ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif; background:radial-gradient(ellipse at 50% 42%,#fffefa 0,#fff8f1 42%,#fbe5ed 100%); }
+    body:before,body:after { content:""; position:fixed; z-index:0; width:min(78vw,520px); aspect-ratio:1; border-radius:50%; filter:blur(2px); pointer-events:none; }
+    body:before { top:-34vw; left:-30vw; background:radial-gradient(circle,#f3bfd0a8 0,transparent 70%); }
+    body:after { right:-34vw; bottom:-36vw; background:radial-gradient(circle,#f9d88a88 0,transparent 70%); }
     .scene { width:min(100%,680px); text-align:center; position:relative; z-index:1; padding:clamp(26px,6vh,54px) 18px; }
-    .eyebrow { display:inline-flex; align-items:center; gap:8px; margin:0 0 16px; padding:8px 14px; border:1px solid #eac9d4; border-radius:99px; background:#fff9; letter-spacing:.09em; text-transform:uppercase; color:#a35c76; font-size:.72rem; font-weight:800; box-shadow:0 5px 18px #7548610b; }
-    .eyebrow:before,.eyebrow:after { content:"✦"; color:#e6ae50; font-size:.8rem; }
+    .eyebrow { display:none; }
     h1 { margin:0; font-size:clamp(2rem,8vw,3.7rem); line-height:1.04; letter-spacing:-.045em; text-wrap:balance; }
     .hint { margin:15px 0 0; color:#806d7e; font-size:clamp(1rem,3.8vw,1.15rem); }
     .birth-form { width:min(100%,360px); margin:clamp(22px,4vh,34px) auto 0; }
     .birth-form label { display:block; margin-bottom:11px; font-size:1.13rem; font-weight:750; }
     .date-row { display:flex; gap:9px; }
-    .birth-form input { min-width:0; flex:1; padding:14px 12px; border:1px solid #dfc9d3; border-radius:15px; color:var(--ink); background:#fff; font:inherit; box-shadow:0 6px 20px #7548610d; }
+    .birth-form input { min-width:0; flex:1; padding:14px 16px; border:1px solid #dfc9d3; border-radius:15px; color:var(--ink); background:#fff; font:inherit; box-shadow:0 6px 20px #7548610d; }
+    .birth-form input::placeholder { color:#ad9aa5; opacity:1; }
     .birth-form input:focus-visible { outline:3px solid #d889a3; outline-offset:2px; }
     .birth-form button { padding:0 17px; border:0; border-radius:15px; background:linear-gradient(135deg,#ef7790,#dc587b); color:#fff; font:inherit; font-weight:750; box-shadow:0 8px 18px #cb688133; cursor:pointer; }
     .birth-form button:active { transform:translateY(1px); }
@@ -30,19 +33,23 @@
     .confirm-card h2 { margin:0; font-size:clamp(1.5rem,6vw,1.9rem); line-height:1.15; }
     .confirm-answers { display:flex; gap:12px; margin-top:24px; }
     .confirm-answers button { flex:1; min-height:52px; border:0; border-radius:16px; color:white; background:linear-gradient(135deg,#ef7790,#dc587b); font:inherit; font-size:1.1rem; font-weight:800; cursor:pointer; box-shadow:0 8px 18px #cb688133; }
+    .scene.gift-ready .eyebrow,.scene.gift-ready h1 { display:none; }
+    .scene.gift-ready .hint { margin-top:3px; color:#704c68; font-size:clamp(1.2rem,5vw,1.65rem); font-weight:800; }
+    .scene.gift-ready .gift-button { margin-top:12px; }
     [hidden] { display:none !important; }
-    .gift-button { display:block; margin:clamp(20px,4vh,34px) auto 0; padding:4px; width:min(78vw,360px); aspect-ratio:1; border:0; border-radius:38px; background:transparent; cursor:pointer; -webkit-tap-highlight-color:transparent; filter:drop-shadow(0 25px 25px #cb688144); transition:transform .25s ease,filter .25s ease; }
+    .gift-button { display:block; margin:clamp(20px,4vh,34px) auto 0; padding:4px; width:min(88vw,430px); aspect-ratio:1; border:0; border-radius:38px; background:transparent; cursor:pointer; -webkit-tap-highlight-color:transparent; filter:drop-shadow(0 25px 25px #cb688144); transition:transform .25s ease,filter .25s ease; }
     .gift-button:hover { transform:translateY(-7px) rotate(-2deg); filter:drop-shadow(0 30px 24px #cb688155); }
     .gift-button:focus-visible,.close:focus-visible { outline:4px solid #60446a; outline-offset:5px; }
-    .gift { width:100%; height:100%; position:relative; animation:bob 2.8s ease-in-out infinite; }
-    .box { position:absolute; width:74%; height:53%; left:13%; bottom:5%; border-radius:12px 12px 25px 25px; background:linear-gradient(110deg,#fa8ca2,#ef6483 55%,#e75076); box-shadow:inset -12px -8px 0 #d94469; }
-    .box:before { content:""; position:absolute; left:43%; top:0; width:17%; height:100%; background:linear-gradient(90deg,#ffdf83,#f7c85c 55%,#e8ad3f); }
-    .lid { position:absolute; width:86%; height:18%; left:7%; bottom:55%; border-radius:12px; background:linear-gradient(#ff9db0,#ed5b7d); box-shadow:inset 0 -6px 0 #db4c70; }
-    .lid:before { content:""; position:absolute; left:44%; top:0; width:14%; height:100%; background:linear-gradient(90deg,#ffe18b,#f4bd4d); }
-    .bow { position:absolute; left:50%; bottom:69%; width:46%; height:31%; transform:translateX(-50%); }
-    .bow:before,.bow:after { content:""; position:absolute; width:48%; height:70%; top:15%; border:14px solid #f5c45d; }
-    .bow:before { left:1%; border-radius:65% 55% 20% 65%; transform:rotate(22deg); }
-    .bow:after { right:1%; border-radius:55% 65% 65% 20%; transform:rotate(-22deg); }
+    .gift { display:block; width:100%; height:100%; position:relative; animation:bob 2.8s ease-in-out infinite; }
+    .box { position:absolute; width:74%; height:53%; left:13%; bottom:5%; border-radius:7px 7px 22px 22px; background:linear-gradient(90deg,#e81126 0%,#fb2639 18%,#ed172a 54%,#ce0719 100%); box-shadow:inset -12px -8px 0 #bb0618,inset 9px 0 0 #ff4b53,0 12px 20px #a5142830; }
+    .box:before { content:""; position:absolute; left:40%; top:0; width:20%; height:100%; background:linear-gradient(90deg,#13bfd0,#42e6e5 48%,#09a9be); box-shadow:2px 0 5px #087d8b44; }
+    .box:after { content:""; position:absolute; left:0; right:0; top:0; height:16%; border-radius:6px 6px 0 0; background:linear-gradient(180deg,#ff5660,#ec1d30); }
+    .lid { position:absolute; width:86%; height:18%; left:7%; bottom:55%; border-radius:8px 8px 4px 4px; background:linear-gradient(100deg,#ff3544 0%,#ef1429 58%,#d90920 100%); box-shadow:inset 0 -7px 0 #bd0819,0 5px 8px #8b0b1d33; }
+    .lid:before { content:""; position:absolute; left:42%; top:0; width:16%; height:100%; background:linear-gradient(90deg,#11b9ca,#49e3e3 50%,#079fb4); }
+    .bow { position:absolute; left:50%; bottom:68%; width:64%; height:34%; transform:translateX(-50%); }
+    .bow:before,.bow:after { content:""; position:absolute; width:44%; height:65%; top:0; background:linear-gradient(135deg,#5af3f0 0%,#11bfd0 54%,#078fa9 100%); box-shadow:inset 5px 4px 8px #b8ffff77,3px 5px 7px #00697644; }
+    .bow:before { left:3%; border-radius:85% 18% 72% 30%; transform:rotate(17deg) skewY(-8deg); }
+    .bow:after { right:3%; border-radius:18% 85% 30% 72%; transform:rotate(-17deg) skewY(8deg); }
     .gift.opening { animation:gift-pop .72s cubic-bezier(.2,.9,.25,1.3) both; }
     .gift.opening .lid { transform-origin:15% 100%; animation:lid-open .72s cubic-bezier(.2,.8,.2,1) both; }
     .gift.opening .bow { animation:bow-away .72s ease-in both; }
@@ -75,7 +82,7 @@
     <form class="birth-form" id="birthForm">
       <label for="birthDate">Ваша дата рождения?</label>
       <div class="date-row">
-        <input id="birthDate" name="birthDate" type="date" autocomplete="bday" required aria-describedby="birthError">
+        <input id="birthDate" name="birthDate" type="text" inputmode="numeric" autocomplete="bday" placeholder="ДД.ММ.ГГГГ" maxlength="10" required aria-describedby="birthError">
         <button type="submit">Проверить</button>
       </div>
       <p class="error" id="birthError" aria-live="polite"></p>
@@ -117,7 +124,8 @@
     const confirmLayer = document.getElementById('confirmLayer');
     birthForm.addEventListener('submit', event => {
       event.preventDefault();
-      if (birthDate.value === '1996-11-12') {
+      const enteredDate = birthDate.value.trim().replace(/\//g, '.').replace(/-/g, '.');
+      if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(enteredDate) && enteredDate.split('.').map((part, i) => i < 2 ? part.padStart(2, '0') : part).join('.') === '12.11.1996') {
         birthError.textContent = '';
         birthForm.hidden = true;
         confirmLayer.classList.add('open');
@@ -129,8 +137,11 @@
     });
     document.querySelectorAll('.confirmYes').forEach(button => button.addEventListener('click', () => {
       confirmLayer.classList.remove('open');
-      document.getElementById('openHint').hidden = false;
+      const hint = document.getElementById('openHint');
+      hint.textContent = 'Открой подарок';
+      hint.hidden = false;
       openButton.hidden = false;
+      document.getElementById('greeting').classList.add('gift-ready');
       openButton.focus();
     }));
     function celebrate() {
