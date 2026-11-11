@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8f1">
+  <title>Подарок для тебя!</title>
+  <style>
+    :root { color-scheme: light; --ink:#402b42; --pink:#ef6d8b; --gold:#f5c45d; --paper:#fff8f1; }
+    * { box-sizing:border-box }
+    body { margin:0; min-height:100svh; display:grid; place-items:center; overflow:hidden; padding:24px; color:var(--ink); font-family: system-ui,-apple-system,"Segoe UI",sans-serif; background:radial-gradient(ellipse at 50% 40%,#fff 0,#fff8f1 48%,#fde8e5 100%); }
+    .scene { width:min(100%,680px); text-align:center; position:relative; z-index:1; }
+    .eyebrow { margin:0 0 10px; letter-spacing:.16em; text-transform:uppercase; color:#ae7185; font-size:.76rem; font-weight:750; }
+    h1 { margin:0; font-size:clamp(2rem,7vw,3.7rem); line-height:1.08; letter-spacing:-.04em; }
+    .hint { margin:14px 0 0; color:#806d7e; font-size:clamp(1rem,3vw,1.15rem); }
+    .gift-button { display:block; margin:25px auto 0; padding:4px; width:min(72vw,310px); aspect-ratio:1; border:0; border-radius:38px; background:transparent; cursor:pointer; -webkit-tap-highlight-color:transparent; filter:drop-shadow(0 22px 22px #cb688144); transition:transform .25s ease,filter .25s ease; }
+    .gift-button:hover { transform:translateY(-7px) rotate(-2deg); filter:drop-shadow(0 30px 24px #cb688155); }
+    .gift-button:focus-visible,.close:focus-visible { outline:4px solid #60446a; outline-offset:5px; }
+    .gift { width:100%; height:100%; position:relative; animation:bob 2.8s ease-in-out infinite; }
+    .box { position:absolute; width:74%; height:53%; left:13%; bottom:5%; border-radius:12px 12px 25px 25px; background:linear-gradient(110deg,#fa8ca2,#ef6483 55%,#e75076); box-shadow:inset -12px -8px 0 #d94469; }
+    .box:before { content:""; position:absolute; left:43%; top:0; width:17%; height:100%; background:linear-gradient(90deg,#ffdf83,#f7c85c 55%,#e8ad3f); }
+    .lid { position:absolute; width:86%; height:18%; left:7%; bottom:55%; border-radius:12px; background:linear-gradient(#ff9db0,#ed5b7d); box-shadow:inset 0 -6px 0 #db4c70; }
+    .lid:before { content:""; position:absolute; left:44%; top:0; width:14%; height:100%; background:linear-gradient(90deg,#ffe18b,#f4bd4d); }
+    .bow { position:absolute; left:50%; bottom:69%; width:46%; height:31%; transform:translateX(-50%); }
+    .bow:before,.bow:after { content:""; position:absolute; width:48%; height:70%; top:15%; border:14px solid #f5c45d; }
+    .bow:before { left:1%; border-radius:65% 55% 20% 65%; transform:rotate(22deg); }
+    .bow:after { right:1%; border-radius:55% 65% 65% 20%; transform:rotate(-22deg); }
+    .gift.opening { animation:gift-pop .72s cubic-bezier(.2,.9,.25,1.3) both; }
+    .gift.opening .lid { transform-origin:15% 100%; animation:lid-open .72s cubic-bezier(.2,.8,.2,1) both; }
+    .gift.opening .bow { animation:bow-away .72s ease-in both; }
+    .sparkle { position:absolute; color:var(--gold); font-size:32px; animation:twinkle 2s ease-in-out infinite; }
+    .s1 { left:4%; top:33%; }.s2 { right:3%; top:44%; animation-delay:.7s }.s3 { right:14%; top:8%; font-size:22px; animation-delay:1.2s }
+    .video-layer { position:fixed; inset:0; z-index:5; display:grid; place-items:center; padding:20px; background:#201729ed; opacity:0; visibility:hidden; transition:opacity .35s,visibility .35s; }
+    .video-layer.open { opacity:1; visibility:visible; }
+    .video-layer.waiting { opacity:0; visibility:hidden; }
+    .video-card { width:min(100%,1000px); position:relative; transform:translateY(16px) scale(.98); transition:transform .35s; }
+    .open .video-card { transform:translateY(0) scale(1); }
+    video { display:block; width:100%; max-height:82svh; aspect-ratio:16/9; background:#120f15; border-radius:16px; box-shadow:0 28px 90px #0008; }
+    .close { position:absolute; right:0; bottom:calc(100% + 12px); width:42px; height:42px; border:1px solid #ffffff55; border-radius:50%; color:#fff; background:#ffffff20; font-size:25px; cursor:pointer; }
+    .video-note { color:#fff; text-align:center; margin:16px 0 0; font-size:.95rem; }
+    .confetti { position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:4; }
+    .piece { position:absolute; top:-20px; width:9px; height:15px; border-radius:2px; animation:fall var(--duration) linear forwards; }
+    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+    @keyframes gift-pop { 0%{transform:scale(1)} 35%{transform:scale(1.14) rotate(-5deg)} 100%{transform:scale(.76) translateY(25px);opacity:.35} }
+    @keyframes lid-open { 0%{transform:translateY(0) rotate(0)} 45%{transform:translateY(-8px) rotate(-5deg)} 100%{transform:translate(-48px,-112px) rotate(-32deg);opacity:0} }
+    @keyframes bow-away { 0%{transform:translateX(-50%) scale(1)} 100%{transform:translate(-50%,-115px) scale(.6);opacity:0} }
+    @keyframes twinkle { 0%,100%{opacity:.45;transform:scale(.8) rotate(0)} 50%{opacity:1;transform:scale(1.15) rotate(18deg)} }
+    @keyframes fall { to { transform:translate3d(var(--drift),110svh,0) rotate(780deg); opacity:.9 } }
+    @media (prefers-reduced-motion:reduce) { *,*:before,*:after { animation-duration:.01ms!important; animation-iteration-count:1!important; scroll-behavior:auto!important; transition-duration:.01ms!important } }
+  </style>
+</head>
+<body>
+  <main class="scene" id="greeting">
+    <p class="eyebrow">для самого именинника</p>
+    <h1>У тебя есть подарок!</h1>
+    <p class="hint">Нажми на коробочку, чтобы открыть ✨</p>
+    <button class="gift-button" id="openGift" aria-label="Открыть подарок">
+      <span class="gift" aria-hidden="true"><i class="sparkle s1">✦</i><i class="sparkle s2">✧</i><i class="sparkle s3">✦</i><span class="box"></span><span class="lid"></span><span class="bow"></span></span>
+    </button>
+  </main>
+  <div class="confetti" id="confetti" aria-hidden="true"></div>
+  <section class="video-layer" id="videoLayer" role="dialog" aria-modal="true" aria-label="Видео поздравление">
+    <div class="video-card">
+      <button class="close" id="closeVideo" aria-label="Закрыть видео">×</button>
+      <video id="birthdayVideo" controls playsinline preload="metadata">
+        <source src="video.mp4" type="video/mp4">
+        Твой браузер не поддерживает воспроизведение видео.
+      </video>
+      <p class="video-note">С днём рождения! 🎂</p>
+    </div>
+  </section>
+  <script>
+    const layer = document.getElementById('videoLayer');
+    const video = document.getElementById('birthdayVideo');
+    const openButton = document.getElementById('openGift');
+    const confetti = document.getElementById('confetti');
+    function celebrate() {
+      const colors = ['#ef6d8b','#f5c45d','#8c72c9','#66c6a5','#ffffff'];
+      for (let i=0; i<70; i++) {
+        const piece = document.createElement('i');
+        piece.className = 'piece';
+        piece.style.left = `${Math.random()*100}%`;
+        piece.style.background = colors[i % colors.length];
+        piece.style.setProperty('--duration', `${2.2 + Math.random()*2.1}s`);
+        piece.style.setProperty('--drift', `${(Math.random()-.5)*260}px`);
+        piece.style.animationDelay = `${Math.random()*.7}s`;
+        confetti.appendChild(piece);
+        piece.addEventListener('animationend', () => piece.remove(), {once:true});
+      }
+    }
+    openButton.addEventListener('click', () => {
+      if (openButton.disabled) return;
+      openButton.disabled = true;
+      document.querySelector('.gift').classList.add('opening');
+      celebrate();
+      window.setTimeout(() => {
+        layer.classList.add('open');
+        video.play().catch(() => {}); // Some browsers require a second tap on the video.
+        document.getElementById('closeVideo').focus();
+      }, 720);
+    });
+    function closeVideo() { video.pause(); layer.classList.remove('open'); openButton.focus(); }
+    document.getElementById('closeVideo').addEventListener('click', closeVideo);
+    layer.addEventListener('click', e => { if (e.target === layer) closeVideo(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && layer.classList.contains('open')) closeVideo(); });
+  </script>
+</body>
+</html>
+
